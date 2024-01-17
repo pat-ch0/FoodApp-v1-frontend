@@ -25,7 +25,7 @@ export default class Button extends Vue {
 </script>
 
 <style>
-@import "../css/variable.css";
+@import "../css/variables.css";
 
 
 .button-class {
