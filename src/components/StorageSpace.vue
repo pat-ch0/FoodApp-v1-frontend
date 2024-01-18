@@ -1,5 +1,5 @@
 <template>
-    <div class="storageSpace" :on-touchend="handleSwipe()">
+    <div class="storageSpace" :on-touchend="handleSwipe">
         <!-- left swipe -->
         <div class="swipe left">
             <i class="swipeIcons">modify</i>
@@ -27,7 +27,7 @@
 
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
+import { Options, Vue } from 'vue-class-component'
 
 @Options({
     props: {
@@ -42,22 +42,26 @@ export default class Button extends Vue {
     storageProdNb!: number
     storageImg!: string
 
+    // Define actions when a storage is swiped
+    // FONCTION A COMPLETER/CORRIGER
     handleSwipe(): unknown {
         // define the minimum distance to trigger the action
-        const minDistance = 80;
-        const container = document.querySelector('.storageSpaces');
-        const output = document.querySelector('.output');
+        const minDistance = 50
+        const container = document.querySelector('.storageSpace')
+        const output = document.querySelector('.output')
         // get the distance the user swiped
         if (container != null && output != null) {
-            const swipeDistance = container.scrollLeft - container.clientWidth;
+            const swipeDistance = container.scrollLeft - container.clientWidth
+            // Left swipe : modify
             if (swipeDistance < minDistance * -1) {
-                output.innerHTML = 'swiped left';
+                output.innerHTML = 'swiped left'
             }
+            // Right swipe : delete
             else if (swipeDistance > minDistance) {
-                output.innerHTML = 'swiped right';
+                output.innerHTML = 'swiped right'
             }
             else {
-                output.innerHTML = `did not swipe ${minDistance}px`;
+                output.innerHTML = `did not swipe ${minDistance}px`
             }
         }
 
