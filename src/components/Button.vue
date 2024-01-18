@@ -21,7 +21,7 @@ import { Options, Vue } from 'vue-class-component';
 export default class Button extends Vue {
     buttonText!: string
     callback!: () => void
-    }
+}
 </script>
 
 <style>
@@ -40,9 +40,10 @@ export default class Button extends Vue {
     background-color: var(--secondary-color);
     cursor: pointer;
     padding: 0 2em;
+    position: relative;
 }
-.button-class:hover
-{
+
+.button-class:hover {
     scale: 1.1;
 }
 </style>

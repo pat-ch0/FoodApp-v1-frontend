@@ -12,6 +12,7 @@
             <div class="storagePanel">
                 <p>{{ storageName }}</p>
                 <p>Referenced products : {{ storageProdNb }}</p>
+                <p>Referenced products : {{ storageProdNb }}</p>
             </div>
         </div>
 
@@ -19,7 +20,15 @@
         <div class="swipe right">
             <i class="swipeIcons">delete</i>
         </div>
+
+        <!-- right swipe -->
+        <div class="swipe right">
+            <i class="swipeIcons">delete</i>
+        </div>
     </div>
+
+    <!-- debug output -->
+    <p class="output"></p>
 
     <!-- debug output -->
     <p class="output"></p>
@@ -33,6 +42,7 @@ import { Options, Vue } from 'vue-class-component'
     props: {
         storageName: String,
         storageProdNb: Number,
+        storageImg: String
         storageImg: String
     },
 })
@@ -85,9 +95,30 @@ export default class Button extends Vue {
   display: none;
 }
 
+/* Swipe container */
+.storageSpace {
+    padding: 0.75em 2em;
+    display: flex;
+    overflow: auto;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+}
+
+/* scrollbar should be hidden */
+.storageSpace::-webkit-scrollbar {
+  display: none;
+}
+
 .storagePanel {
     display: flex;
     flex-direction: column;
+    padding-left: 2em;
+    scroll-snap-align: start; /* main element should always snap into view */
+}
+
+/* actions and element should be 100% wide */
+.swipe, .storagePanel {
+  min-width: 100%;
     padding-left: 2em;
     scroll-snap-align: start; /* main element should always snap into view */
 }
@@ -119,7 +150,31 @@ i {
 }
 
 .storageLogo {
+.swipe {
+  display: flex;
+  align-items: center;
+}
+
+/* icon should remain sticky */
+i {
+  color: white;
+  position: sticky;
+  left: 16px;
+  right: 16px;
+}
+
+/* action background colors */
+.left {
+  background-color: #FC6A03;
+}
+.right {
+  justify-content: flex-end;
+  background-color: #FF0000;
+}
+
+.storageLogo {
     height: auto;
+    width: 5em;
     width: 5em;
     float: left;
 }

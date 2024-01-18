@@ -15,6 +15,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
+      "jest",
       "webpack-env"
     ],
     "paths": {
@@ -34,7 +35,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "jest.config.ts",
   ],
   "exclude": [
     "node_modules"

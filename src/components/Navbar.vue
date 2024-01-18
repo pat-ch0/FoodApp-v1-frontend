@@ -3,13 +3,13 @@
     <!-- Mobile Navbar -->
     <div class="mobile-navbar" v-if="showMobileNavbar && showNavbar">
       <!-- Icons for search, cart, and menu -->
-      <router-link @click="closeMenu" to="/storage" class="icon">
+      <router-link @click="closeMenu" to="/storage" class="icon cart-button">
         <img src="../assets/icons/cart.svg" alt="Cart Icon" />
       </router-link>
-      <router-link @click="closeMenu" to="/search" class="icon">
+      <router-link @click="closeMenu" to="/search" class="icon search-button">
         <img src="../assets/icons/search.svg" alt="Search Icon" />
       </router-link>
-      <div @click="openMenu" class="icon">
+      <div @click="openMenu" class="icon menu-button">
         <img src="../assets/icons/menu.svg" alt="Menu Icon" />
       </div>
 
@@ -74,7 +74,7 @@ export default class NavbarComponent extends Vue {
   }
 
   // Cleanup on component destruction
-  beforeDestroy() {
+  beforeUnmount() {
     // Remove the resize event listener to avoid memory leaks
     window.removeEventListener('resize', this.updateVisibility);
 
