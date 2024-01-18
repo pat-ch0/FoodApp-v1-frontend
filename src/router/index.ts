@@ -4,6 +4,7 @@ import ProductDetailView from '../views/ProductDetailView.vue'
 import Product from '@/product/product'
 import WelcomeView from '../views/WelcomeView.vue'
 import StorageView from '../views/StorageView.vue'
+import ResearchView from '../views/ResearchView.vue'
 
 const productData  = {
       "product_name": "Thai peanut noodle kit includes stir-fry rice noodles & thai peanut seasoning",
@@ -51,7 +52,13 @@ const routes = [
     path: '/storage',
     name: 'storage',
     component: StorageView
-  }
+  },
+  {
+    path: '/research',
+    name: 'research',
+    component: ResearchView
+  },
+  
   // {
   //   path: '/about',
   //   name: 'about',
@@ -60,6 +67,11 @@ const routes = [
   //   // which is lazy-loaded when the route is visited.
   //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   // },
+
+  /**
+   * Rooting path Research  
+   * About scanning and research products.
+   */
 ]
 
 const router = createRouter({
