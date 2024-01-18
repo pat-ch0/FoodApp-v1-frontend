@@ -27,10 +27,11 @@ export default class HelloWorld extends Vue {
     display: flex;
     flex-direction: column;
     align-items: start;
+    padding-bottom: 0.5em;
 }
 
 h1 {
-    color: #2107b5;
+    color: #33065f;
     float: left;
     font-size: 2em;
 }
