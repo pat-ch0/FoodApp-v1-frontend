@@ -38,12 +38,14 @@ const routes = [
     path: '/product',
     name: 'product',
     component: ProductDetailView,
-    props: { product: product }
+    props: { product: product },
+    meta: { hideNavbar: true } 
   },
   {
     path: '/welcome',
     name: 'welcome',
-    component: WelcomeView
+    component: WelcomeView,
+    meta: { hideNavbar: true } 
   },
   {
     path: '/storage',
