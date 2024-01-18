@@ -1,12 +1,28 @@
 <template>
-    <div class="storageSpaces-set">
-        <!-- :src=require allows to specify the desired image in StorageView.vue -->
-        <img alt="Storage logo" :src="require('@/assets/icons/' + storageImg + '')">
-        <div class="storagePanel">
-            <p>{{ storageName }}</p>
-            <p>Referenced products : {{ storageProdNb }}</p>
+    <div class="storageSpace" :on-touchend="handleSwipe()">
+        <!-- left swipe -->
+        <div class="swipe left">
+            <i class="swipeIcons">modify</i>
+        </div>
+
+        <!-- swipeable storage -->
+        <div class="swipeStorage">
+            <!-- :src=require allows to specify the desired image in StorageView.vue -->
+            <img alt="Storage logo" class="storageLogo" :src="require('@/assets/icons/' + storageImg + '')">
+            <div class="storagePanel">
+                <p>{{ storageName }}</p>
+                <p>Referenced products : {{ storageProdNb }}</p>
+            </div>
+        </div>
+
+        <!-- right swipe -->
+        <div class="swipe right">
+            <i class="swipeIcons">delete</i>
         </div>
     </div>
+
+    <!-- debug output -->
+    <p class="output"></p>
 </template>
 
 
@@ -25,18 +41,80 @@ export default class Button extends Vue {
     storageName!: string
     storageProdNb!: number
     storageImg!: string
+
+    handleSwipe(): unknown {
+        // define the minimum distance to trigger the action
+        const minDistance = 80;
+        const container = document.querySelector('.storageSpaces');
+        const output = document.querySelector('.output');
+        // get the distance the user swiped
+        if (container != null && output != null) {
+            const swipeDistance = container.scrollLeft - container.clientWidth;
+            if (swipeDistance < minDistance * -1) {
+                output.innerHTML = 'swiped left';
+            }
+            else if (swipeDistance > minDistance) {
+                output.innerHTML = 'swiped right';
+            }
+            else {
+                output.innerHTML = `did not swipe ${minDistance}px`;
+            }
+        }
+
+        return "Swipe couldn't be handled"
+    }
 }
 </script>
 
 <style>
+/* Swipe container */
+.storageSpace {
+    padding: 0.75em 2em;
+    display: flex;
+    overflow: auto;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+}
+
+/* scrollbar should be hidden */
+.storageSpace::-webkit-scrollbar {
+  display: none;
+}
+
 .storagePanel {
     display: flex;
     flex-direction: column;
     padding-left: 2em;
-    font-size: 100%;
+    scroll-snap-align: start; /* main element should always snap into view */
 }
 
-img {
+/* actions and element should be 100% wide */
+.swipe, .storagePanel {
+  min-width: 100%;
+}
+.swipe {
+  display: flex;
+  align-items: center;
+}
+
+/* icon should remain sticky */
+i {
+  color: white;
+  position: sticky;
+  left: 16px;
+  right: 16px;
+}
+
+/* action background colors */
+.left {
+  background-color: #FC6A03;
+}
+.right {
+  justify-content: flex-end;
+  background-color: #FF0000;
+}
+
+.storageLogo {
     height: auto;
     width: 5em;
     float: left;
@@ -45,10 +123,5 @@ img {
 p {
     margin: 0.5em;
     text-align: left;
-}
-
-.storageSpaces-set {
-    padding: 0.75em 2em;
-    display: flex;
 }
 </style>
