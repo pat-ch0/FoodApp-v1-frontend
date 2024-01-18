@@ -4,20 +4,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-
-@Options({
+<script>
+export default {
+  name: 'HomeComponent',
   props: {
-    msg: String
+    msg: String,
   }
-})
-
-export default class HelloWorld extends Vue {
-  msg!: string
 }
-
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>
