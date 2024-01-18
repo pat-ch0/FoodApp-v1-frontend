@@ -1,11 +1,10 @@
 <template>
     <div class="storageSpaces-set">
-        <img alt="Storage logo" src="@/assets/icons/fridge.png">
+        <!-- :src=require allows to specify the desired image in StorageView.vue -->
+        <img alt="Storage logo" :src="require('@/assets/icons/' + storageImg + '')">
         <div class="storagePanel">
-            <div class="storagePanel">
-                <p>{{ storageName }}</p>
-                <p>Produits référencés : {{ storageProdNb }}</p>
-            </div>
+            <p>{{ storageName }}</p>
+            <p>Referenced products : {{ storageProdNb }}</p>
         </div>
     </div>
 </template>
@@ -18,6 +17,7 @@ import { Options, Vue } from 'vue-class-component';
     props: {
         storageName: String,
         storageProdNb: Number,
+        storageImg: String
     },
 })
 
@@ -32,12 +32,13 @@ export default class Button extends Vue {
 .storagePanel {
     display: flex;
     flex-direction: column;
-    padding-left: 1em;
+    padding-left: 2em;
+    font-size: 100%;
 }
 
 img {
     height: auto;
-    width: 4em;
+    width: 5em;
     float: left;
 }
 
@@ -47,7 +48,7 @@ p {
 }
 
 .storageSpaces-set {
-    padding: 1em 2em;
+    padding: 0.75em 2em;
     display: flex;
 }
 </style>

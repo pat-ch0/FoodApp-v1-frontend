@@ -1,6 +1,8 @@
 <template>
   <StorageComponent title="My inventory"/>
-  <StorageSpaceComponent storageName="Frigo" :storageProdNb="5"/>
+  <StorageSpaceComponent storageName="Fridge" :storageProdNb="32" storageImg="fridge.png"/>
+  <StorageSpaceComponent storageName="Freezer" :storageProdNb="16" storageImg="freezer.png"/>
+  <StorageSpaceComponent storageName="Cellar" :storageProdNb="24" storageImg="cellar.png"/>
 </template>
   
   <script>
