@@ -71,7 +71,7 @@ export default class Button extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 /* scroll snap takes care of restoring scroll position */
 .storageSpace {
     margin-top: 4%;

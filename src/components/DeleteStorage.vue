@@ -1,3 +1,4 @@
+<!-- Delete storage confirmation notification -->
 <template>
     <transition name="delete-storage">
         <div v-if="isOpen" class="delete-storage">
@@ -20,16 +21,18 @@ export default class DeleteStorage extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .delete-storage {
     position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     width: 60%;
     padding: 10px;
     border-radius: 12px;
     border: none;
-    margin: 0 15%;
     z-index: 10;
 }
 </style>

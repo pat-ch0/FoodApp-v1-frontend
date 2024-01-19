@@ -1,10 +1,12 @@
 <template>
+    <!-- Top of the page : Title and "Add storage" button -->
     <div class="storage">
         <h1>{{ title }}</h1>
         <button type="button" class="button-addStorage" v-on:click="displayAddStorage">Add inventory space</button>
         <button type="button" v-on:click="displayDeleteStorage">Test deletion</button>
     </div>
 
+    <!-- Add a storage sheet -->
     <BottomSheet :isOpen="displayAddSheet">
         <div class="add-bottom-sheet">
             <h2>Add storage</h2>
@@ -12,6 +14,7 @@
         </div>
     </BottomSheet>
 
+    <!-- Delete storage notification -->
     <DeleteStorage class="deleteWindow" :isOpen="storageDeletion">
         <p>Do you really want to delete this storage ?</p>
         <button type="button" class="cancelButton" v-on:click="cancelDeletion">Cancel</button>
@@ -116,11 +119,16 @@ input:focus {
 .confirmButton {
     font-weight: bold;
     margin-left: 15%;
+    color: white;
+    background-color: rgb(255, 0, 0);
+}
+.cancelButton {
+    background-color: rgb(210, 210, 210);
 }
 .confirmButton:active {
-    background-color: rgba(26, 222, 12, 0.6);
+    background-color: rgba(215, 10, 10, 0.7);
 }
 .cancelButton:active {
-    background-color: rgba(228, 12, 12, 0.6);
+    background-color: rgba(26, 222, 12, 0.7);
 }
 </style>
