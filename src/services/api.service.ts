@@ -10,7 +10,11 @@ export abstract class ApiService {
     }
 
     async get<T>(id: string): Promise<AxiosResponse<T>> {
-        return this.axiosInstance.get<T>(id);
+        try {
+            return await this.axiosInstance.get<T>(id);
+        } catch (error : any) {
+            return error;
+        }
     }
 
     // Add other methods for POST, PUT, DELETE, etc., with generic types

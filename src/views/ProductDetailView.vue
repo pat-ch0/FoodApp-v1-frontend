@@ -1,20 +1,26 @@
 <template>
     <div class="product-detail" v-if="!loading">
-        <img :src="product.imageSrc" alt="Product image">
-        <BottomSheet :isOpen="true">
+        <BottomSheet v-if="showErrorMessage" :isOpen="showErrorMessage">
+            <div class="product-detail-bottom-sheet">
+                <h2 class="product-detail-name">Error</h2>
+                <p>Product not found</p>
+            </div>
+        </BottomSheet>
+        <img v-else :src="product.imageSrc" alt="Product image">
+        <BottomSheet :isOpen="!showErrorMessage">
             <div class="product-detail-bottom-sheet">
                 <h2 class="product-detail-name">{{ product.name }}</h2>
-                <p>{{ formattedPrice }} / Each</p>
+                <!-- <p>{{ formattedPrice }} / Each</p> -->
                 <p><span class="bold">Composition :</span> {{ formattedComposition }}</p>
                 <p><span class="bold">Allergens:</span> {{ formattedAllergens }}</p>
-                <div class="product-detail-nutriscore-container">
+                <div v-if="product.nutriScore.toLocaleUpperCase().length == 1" class="product-detail-nutriscore-container">
                     <p><span class="bold">Nutrition Score:</span></p>
                     <div class="nutri-scrore" :style="{ backgroundColor: nutriScoreColor }">
                         {{ product.nutriScore.toLocaleUpperCase() }}
                     </div>
                 </div>
-                <p><span class="bold">Dietary Restrictions:</span></p>
-                <p><span class="bold">Carbon Footprint:</span> {{ formattedCarbonFootprint }}</p>
+                <p><span class="bold">Dietary Restrictions: {{ formattedDietaryRestrictions }}</span></p>
+                <!-- <p><span class="bold">Carbon Footprint:</span> {{ formattedCarbonFootprint }}</p> -->
                 <div class="product-detail-btn-container">
                     <Button class="product-detail-btn" buttonText="Add to stock"></Button>
                 </div>
@@ -36,10 +42,9 @@ import { ProductService } from '@/services/product.service';
 import BottomSheet from '@/components/BottomSheet.vue';
 import Product from '@/product/product';
 import Button from '@/components/Button.vue';
+import ProductBuilder from '@/product/product-builder';
+
 @Options({
-    props: {
-        product: Product,
-    },
     components: {
         BottomSheet,
         Button,
@@ -48,7 +53,7 @@ import Button from '@/components/Button.vue';
 
 export default class ProductDetail extends Vue {
     product!: Product
-    product2!: Product
+    showErrorMessage: boolean = false;
     formattedAllergens: string = '';
     formattedDietaryRestrictions: string = '';
     formattedComposition: string = '';
@@ -56,7 +61,7 @@ export default class ProductDetail extends Vue {
     formattedCarbonFootprint: string = '';
     nutriScoreColor: string = 'red';
     loading: boolean = true;
-    error:any;
+    error: any;
 
     private colors: Map<string, string> = new Map([
         ['A', '#038141'],
@@ -75,9 +80,8 @@ export default class ProductDetail extends Vue {
         } else {
             console.error("Barcode is not a string:", barcode);
         }
-
-        this.formatData();
-        this.nutriScoreColor = this.colors.get(this.product.nutriScore.toLocaleUpperCase()) || '';
+        if (this.product)
+            this.formatData();
     }
 
     async getProduct(barcode: string) {
@@ -85,8 +89,11 @@ export default class ProductDetail extends Vue {
         try {
             const productService = ProductService.getInstance();
             const response = await productService.getProductById(barcode);
-            console.log(response.data);
-            this.product2 = response.data;
+            if (response.status === 200) {
+                this.product = ProductBuilder.fromJson(response.data);
+            } else {
+                this.showErrorMessage = true;
+            }
         } catch (e) {
             this.error = e;
         } finally {
@@ -95,12 +102,14 @@ export default class ProductDetail extends Vue {
     }
 
     formatData() {
-        this.formattedAllergens = this.product.allergens.join(', ').replace(/en:/g, '');
-        this.formattedDietaryRestrictions = this.product.dietaryRestrictions.join(', ').replace(/en:/g, '');
-        this.formattedComposition = this.product.composition.join(', ').replace(/en:/g, '');
-        this.formattedPrice = `${this.product.price.toFixed(2)}$`;
-        this.formattedCarbonFootprint = `${this.product.carbonFootprint} kg CO2e`;
+        this.formattedAllergens = this.product.formatAllergens();
+        this.formattedDietaryRestrictions = this.product.composition.formatDietaryRestrictions();
+        this.formattedComposition = this.product.composition.formatIngredients();
+        this.formattedPrice = this.product.formatPrice();
+        this.formattedCarbonFootprint = this.product.formatCarbonFootprint();
+        this.nutriScoreColor = this.colors.get(this.product.nutriScore.toLocaleUpperCase()) || 'red';
     }
+
 }
 </script>
 
