@@ -9,9 +9,9 @@
         <div class="swipeStorage">
             <!-- :src=require allows to specify the desired image in StorageView.vue -->
             <img alt="Storage logo" class="storageLogo" :src="require('@/assets/icons/' + storageImg + '')">
-            <div class="storagePanel">
-                <p>{{ storageName }}</p>
-                <p>Referenced products : {{ storageProdNb }}</p>
+            <div class="storageInfos">
+                <p>{{ storageName }}<br>
+                Referenced products : {{ storageProdNb }}</p>
             </div>
         </div>
 
@@ -46,17 +46,18 @@ export default class Button extends Vue {
     // FONCTION A COMPLETER/CORRIGER
     handleSwipe(): unknown {
         // define the minimum distance to trigger the action
-        const minDistance = 50
+        const minDistance = 60
         const container = document.querySelector('.storageSpace')
         const output = document.querySelector('.output')
         // get the distance the user swiped
         if (container != null && output != null) {
             const swipeDistance = container.scrollLeft - container.clientWidth
-            // Left swipe : modify
+            // Left swipe : delete
             if (swipeDistance < minDistance * -1) {
                 output.innerHTML = 'swiped left'
+                // document.querySelector('storageSpace')?.remove()
             }
-            // Right swipe : delete
+            // Right swipe : modify
             else if (swipeDistance > minDistance) {
                 output.innerHTML = 'swiped right'
             }
@@ -71,9 +72,9 @@ export default class Button extends Vue {
 </script>
 
 <style>
-/* Swipe container */
+/* scroll snap takes care of restoring scroll position */
 .storageSpace {
-    padding: 0.75em 2em;
+    margin-top: 4%;
     display: flex;
     overflow: auto;
     overflow-x: scroll;
@@ -82,50 +83,53 @@ export default class Button extends Vue {
 
 /* scrollbar should be hidden */
 .storageSpace::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
-.storagePanel {
-    display: flex;
-    flex-direction: column;
-    padding-left: 2em;
+.swipeStorage {
     scroll-snap-align: start; /* main element should always snap into view */
 }
 
+.storageInfos {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
 /* actions and element should be 100% wide */
-.swipe, .storagePanel {
+.swipe, .swipeStorage {
     min-width: 100%;
 }
 .swipe {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
-/* icon should remain sticky */
 i {
-  color: white;
-  position: sticky;
-  left: 16px;
-  right: 16px;
+    color: white;
+    position: sticky; /* icon should remain sticky */
+    left: 16px;
+    right: 16px;
 }
 
 /* action background colors */
 .left {
-  background-color: #FC6A03;
+    background-color: rgb(255, 165, 0);
 }
 .right {
-  justify-content: flex-end;
-  background-color: #FF0000;
+    justify-content: flex-end;
+    background-color: rgb(255, 0, 0);
 }
 
 .storageLogo {
     height: auto;
     width: 5em;
     float: left;
+    margin-left: 3%;
+    margin-right: 15%;
 }
 
 .output {
-    margin: 0.5em;
     text-align: left;
 }
 </style>

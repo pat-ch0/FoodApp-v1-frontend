@@ -42,13 +42,14 @@ export default class HelloWorld extends Vue {
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding-bottom: 0.5em;
+    margin-left: 3%;
 }
 
 h1 {
     color: #33065f;
     float: left;
     font-size: 2em;
+    margin-bottom: 15%;
 }
 
 button {
