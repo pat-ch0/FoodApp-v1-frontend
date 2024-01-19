@@ -3,7 +3,6 @@
     <div class="storage">
         <h1>{{ title }}</h1>
         <button type="button" class="button-addStorage" v-on:click="displayAddStorage">Add inventory space</button>
-        <button type="button" v-on:click="displayDeleteStorage">Test deletion</button>
     </div>
 
     <!-- Add a storage sheet -->
@@ -51,11 +50,13 @@ export default class HelloWorld extends Vue {
 
     cancelDeletion() {
         this.storageDeletion = false
+        console.log(false)
         return false
     }
 
     confirmDeletion() {
         this.storageDeletion = false
+        console.log(true)
         return true
     }
 }
