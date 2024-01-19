@@ -7,7 +7,7 @@
                 <p>Product not found</p>
             </div>
         </BottomSheet>
-        <img v-else :src="product.imageSrc" alt="Product image">
+        <img class="product-detail-img" v-else :src="product.imageSrc" alt="Product image">
         <BottomSheet :isOpen="!showErrorMessage">
             <div class="product-detail-bottom-sheet">
                 <h2 class="product-detail-name">{{ product.name }}</h2>
@@ -141,6 +141,12 @@ export default class ProductDetail extends Vue {
     top: 10px;
     left: 10px;
     margin: 1em;
+}
+
+.product-detail-img {
+    width: 100vw;
+    height: 100%;
+    object-fit: cover;
 }
 
 .product-detail-bottom-sheet {
