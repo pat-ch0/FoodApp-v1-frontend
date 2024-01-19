@@ -3,14 +3,19 @@
     Templates regroupe l'ensemble HTML qui sera affiché (View) sur la page lors de l'accès rooter ../router/(index.ts)
  -->
 <template>
-    <div class="research-div-class">
-        <BackButton></BackButton>
-        <h1 class="title-research">Research</h1>
-        <p class="text-info-search">If you want to looking for something on our database, use the research bar.</p>
-        <SearchBar></SearchBar>
-        <div class="separateur"> separateur </div>
-        <p class="text-info-scan">You can use mobile to search your product, take a picture of barcode and u will get your product details. </p>
-        <Button buttonText="SCAN" :callback="test"></Button>
+    <div class="research-div-container">
+        <BackButton class="fixed-top-left"></BackButton>
+        <h1 class="fixed-top-left research-view-title">Research</h1>
+        <div class="research-view-content">
+            <p class="research-view-paragraph">If you want to looking for something on our database, use the research bar.
+            </p>
+            <SearchBar></SearchBar>
+            <div class="separator"></div>
+            <p class="research-view-paragraph">You can use mobile to search your product, take a picture of barcode and u
+                will get
+                your product details. </p>
+            <Button buttonText="SCAN" :callback="test"></Button>
+        </div>
     </div>
 </template>
   
@@ -25,9 +30,7 @@ import SearchBar from '@/components/SearchBar.vue';
 
 // On reçois des composants, @Options traduira les class créer.
 @Options({
-    props: {
-
-    },
+    props: {},
     components:
     {
         Button,
@@ -47,88 +50,73 @@ export default class ResearchView extends Vue {
 
 </script>
 
-<!-- Le CSS est introduit ici, certaines couleurs sont génériques et on été implanté dans un fichier variable.css (../css/variables.css) -->
+<!-- Le CSS est introduit ici, certaines couleurs sont génériques et on été implanté dans un fichier variables.css (../css/variables.css) -->
 <style>
 /* 
 * Positionnement brut 
 */
 
 /* la div regroupant tout (sauf nav) */
-.research-div-class {
-    position: absolute;
-    top: 30%;
+.research-div-container {
+    height: calc(100% - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     font-size: 14px;
 }
 
 /* Titre de la page */
-.title-research {
+.research-view-title {
+    margin-top: .75em;
+}
+
+.fixed-top-left {
     position: fixed;
-    top: 10%;
+    top: calc(5% + 1.5em);
     left: 10%;
 }
 
-/* Text au-dessus de la barre de recherche */
-.text-info-search {
-    position: fixed;
-    top: 30%;
-    color: var(--Text-Secondary, #9586A8);
-    margin-left: 20%;
-    margin-right: 20%;
 
+.research-view-paragraph {
+    margin: 2em .5em 0 .5em;
+    color: var(--Text-Secondary, #9586A8);
+    text-align: center;
+    width: 80%;
 }
-.text-info-search:hover {
-    color: black;
-    scale: 1.1;
-    transition-delay: 170ms;
-    transition-property: all;
+
+.research-view-content {
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4.2em;
+    padding: 0 2em;
 }
 
 /* div engloblant la barre de recherche */
-.searchfield {
-    position: fixed;
-    top: 42%;
-}
-.searchfield:hover {
-    scale: 1.1;
-}
+
 
 /* Séparateur entre recherche et scan */
-.separateur {
-    position: fixed;
-    bottom: 45%;
+.separator {
     width: 80%;
-    left: 10%;
     background-color: black;
     font-size: 0;
     height: 1px;
 }
 
-/* Text en-dessous de la barre de recherche */
-.text-info-scan {
-    position: fixed;
-    top: 65%;
-    color: var(--Text-Secondary, #9586A8);
-    margin-left: 20%;
-    margin-right: 20%;
-
-}
-.text-info-scan:hover {
-    color: black;
-    scale: 1.1;
-    transition-delay: 170ms;
-    transition-property: all;
-}
-
 /* Boutton SCAN */
 .button-class {
-    position: fixed;
-    bottom: 15%;
-    left: 10%;
     width: 80%;
     height: 56px;
 }
-.button-class:hover {
-    scale: 0.8;
 
+.button-class:hover {
+    scale: 1.05;
+}
+
+.button-class:active {
+    scale: 1.02;
 }
 </style>

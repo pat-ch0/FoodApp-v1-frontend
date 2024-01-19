@@ -120,7 +120,7 @@ i {
     float: left;
 }
 
-p {
+.output {
     margin: 0.5em;
     text-align: left;
 }

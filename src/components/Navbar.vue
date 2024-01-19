@@ -6,7 +6,7 @@
       <router-link @click="closeMenu" to="/storage" class="icon cart-button">
         <img src="../assets/icons/cart.svg" alt="Cart Icon" />
       </router-link>
-      <router-link @click="closeMenu" to="/search" class="icon search-button">
+      <router-link @click="closeMenu" to="/research" class="icon search-button">
         <img src="../assets/icons/search.svg" alt="Search Icon" />
       </router-link>
       <div @click="openMenu" class="icon menu-button">
@@ -31,10 +31,10 @@
       </div>
 
       <!-- Desktop Navbar -->
-      <div class="desktop-navbar" v-if="showDesktopNavbar && showNavbar">
+      <div class="desktop-navbar" v-if="showDesktopNavbar">
         <!-- Horizontal menu items -->
         <router-link to="/">Home</router-link>
-        <router-link to="/search">Search</router-link>
+        <router-link to="/research">Search</router-link>
         <router-link to="/storage">Storage</router-link>
         <router-link to="/profile">Profile</router-link>
         <router-link to="/favorites">Favorites</router-link>
@@ -107,7 +107,7 @@ export default class NavbarComponent extends Vue {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   height: 50px;
   display: flex;
   justify-content: space-around;
@@ -116,6 +116,7 @@ export default class NavbarComponent extends Vue {
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
+  z-index: 1;
 }
 
 .icon {
@@ -128,7 +129,6 @@ export default class NavbarComponent extends Vue {
 /*desktop navbar */
 .desktop-navbar {
   display: none;
-
 }
 
 .menu {
@@ -143,11 +143,11 @@ export default class NavbarComponent extends Vue {
   backdrop-filter: blur(10px);
   border-radius: 8px;
   padding: 16px;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  z-index: 1;
 }
 
 .menu-item {
@@ -173,7 +173,7 @@ export default class NavbarComponent extends Vue {
     justify-content: space-around;
     align-items: center;
     background-color: #ffffff;
-    padding: 10px;
+    padding: 1em;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="product-detail">
+    <div class="product-detail" v-if="!loading">
         <img :src="product.imageSrc" alt="Product image">
         <BottomSheet :isOpen="true">
             <div class="product-detail-bottom-sheet">
@@ -21,10 +21,18 @@
             </div>
         </BottomSheet>
     </div>
+
+    <!-- TODO: Make a component of this loader | CSS at bottom -->
+    <div v-else>
+        <!-- Loading spinner -->
+        <img src="../assets/images/loader/loader.webp" class="loader-spinner" alt="Loading...">
+    </div>
 </template>
   
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import { useRoute } from 'vue-router';
+import { ProductService } from '@/services/product.service';
 import BottomSheet from '@/components/BottomSheet.vue';
 import Product from '@/product/product';
 import Button from '@/components/Button.vue';
@@ -37,16 +45,20 @@ import Button from '@/components/Button.vue';
         Button,
     },
 })
+
 export default class ProductDetail extends Vue {
     product!: Product
+    product2!: Product
     formattedAllergens: string = '';
     formattedDietaryRestrictions: string = '';
     formattedComposition: string = '';
     formattedPrice: string = '';
     formattedCarbonFootprint: string = '';
     nutriScoreColor: string = 'red';
+    loading: boolean = true;
+    error:any;
 
-    private colors: Map<string,string>= new Map([
+    private colors: Map<string, string> = new Map([
         ['A', '#038141'],
         ['B', '#85bb2f'],
         ['C', '#fecb02'],
@@ -54,14 +66,32 @@ export default class ProductDetail extends Vue {
         ['E', '#e63e11'],
     ]);
 
-    mounted() {
-        // remove the nav bar
-        document.querySelector('nav')?.remove();
+    async mounted() {
+        const route = useRoute();
+        const barcode = route.params.barcode;
+
+        if (typeof barcode === 'string') {
+            await this.getProduct(barcode);
+        } else {
+            console.error("Barcode is not a string:", barcode);
+        }
 
         this.formatData();
-        console.log(this.product.nutriScore);
-        console.log(this.colors)
         this.nutriScoreColor = this.colors.get(this.product.nutriScore.toLocaleUpperCase()) || '';
+    }
+
+    async getProduct(barcode: string) {
+        this.loading = true;
+        try {
+            const productService = ProductService.getInstance();
+            const response = await productService.getProductById(barcode);
+            console.log(response.data);
+            this.product2 = response.data;
+        } catch (e) {
+            this.error = e;
+        } finally {
+            this.loading = false;
+        }
     }
 
     formatData() {
@@ -75,6 +105,15 @@ export default class ProductDetail extends Vue {
 </script>
 
 <style scoped>
+.loader-spinner {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    height: 8em;
+    width: 8em;
+    margin: 0 auto;
+    transform: translate(-50%, -50%);
+}
 
 @media screen and (max-height: 840px) {
     .product-detail-bottom-sheet * {
@@ -92,7 +131,7 @@ export default class ProductDetail extends Vue {
     text-align: left;
 }
 
-.nutri-scrore{
+.nutri-scrore {
     margin-left: 5px;
     height: 25px;
     width: 20px;
@@ -101,7 +140,7 @@ export default class ProductDetail extends Vue {
     align-items: center;
     color: white;
     border-radius: 5px;
-    font-size:large;
+    font-size: large;
 }
 
 .product-detail-nutriscore-container {
@@ -116,6 +155,7 @@ export default class ProductDetail extends Vue {
 .product-detail-name {
     font-weight: 500;
 }
+
 .product-detail-btn-container {
     display: flex;
     justify-content: center;
