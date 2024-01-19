@@ -7,13 +7,12 @@
         <BackButton class="fixed-top-left"></BackButton>
         <h1 class="fixed-top-left research-view-title">Research</h1>
         <div class="research-view-content">
-            <p class="research-view-paragraph">If you want to looking for something on our database, use the research bar.
+            <p class="research-view-paragraph">If you want to look for something in our database, use the research bar.
             </p>
             <SearchBar></SearchBar>
             <div class="separator"></div>
-            <p class="research-view-paragraph">You can use mobile to search your product, take a picture of barcode and u
-                will get
-                your product details. </p>
+            <p class="research-view-paragraph">To search a product, you can use your mobile or take a picture of
+                the barcode and you will get the product details. </p>
             <Button buttonText="SCAN" :callback="test"></Button>
         </div>
     </div>

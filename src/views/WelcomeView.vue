@@ -5,9 +5,11 @@
             <div class="welcome-view-bottom-sheet">
                 <img src="../assets/logo.png" alt="logo of app">
                 <h2>Food App</h2>
-                <p>Welcome to Food App, the application will make u some profits. This application notificate when need some products, or promotion coming's u..</p>
+                <p>Welcome to Food App, the application that will help you do your food shopping ! 
+                    This application notificates you when you need some products, or when promotions take place near you...</p>
                 <Button class="welcome-view-btn" buttonText="Look for a product"></Button>
-                <span>You will use your device, please allowed all need to all working good..</span>
+                <span>Please allow all the necessary permissions for everything to work...
+                     (We promise we will not sell your data)</span>
             </div>
         </BottomSheet>
     </div>
