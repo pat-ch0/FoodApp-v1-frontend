@@ -1,23 +1,38 @@
 <template>
     <div class="storage">
         <h1>{{ title }}</h1>
-        <button type="button">Add inventory space</button>
+        <button type="button" v-on:click="displayAddStorage">Add inventory space</button>
     </div>
+
+    <BottomSheet :isOpen="displayAddSheet">
+        <div class="add-bottom-sheet">
+            <h2>Add storage</h2>
+            <input type="text" id="storageName" name="storageName" placeholder="Storage name">
+        </div>
+    </BottomSheet>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import BottomSheet from '@/components/BottomSheet.vue';
 
 @Options({
     props: {
         title: String
-    }
+    },
+    components: {
+        BottomSheet,
+    },
 })
 
 export default class HelloWorld extends Vue {
     title!: string
-}
 
+    displayAddSheet: boolean = false
+    displayAddStorage() {
+        this.displayAddSheet = true
+    }
+}
 </script>
   
 <style scoped>
@@ -27,13 +42,14 @@ export default class HelloWorld extends Vue {
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding-bottom: 0.5em;
+    margin-left: 3%;
 }
 
 h1 {
     color: #33065f;
     float: left;
     font-size: 2em;
+    margin-bottom: 15%;
 }
 
 button {
@@ -53,5 +69,19 @@ button:active {
   background-color: #038555;
   box-shadow: 0 5px #777;
   transform: translateY(4px);
+}
+
+input {
+    width: 65%;
+    padding: 6px 10px;
+    margin: 12px 0;
+    box-sizing: border-box;
+    border-radius: 14px;
+    border: 2px solid #a4a4a4;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+}
+input:focus {
+    border: 2px solid #646464;
 }
 </style>
