@@ -6,11 +6,11 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // TODO: Fix this testing file
 describe('ApiService', () => {
-    let service: ApiService;
+    let service: ApiService<any>;
     const baseUrl = 'http://example.com';
 
     beforeEach(() => {
-        service = new class extends ApiService {
+        service = new class extends ApiService<any> {
             constructor() {
                 super(baseUrl);
             }
@@ -30,6 +30,4 @@ describe('ApiService', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith(`${baseUrl}${endpoint}`);
         expect(result).toEqual(responseData);
     });
-
-    // Add tests for other methods POST, PUT, DELETE etc.
 });

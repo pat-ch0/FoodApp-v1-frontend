@@ -43,7 +43,6 @@ import { ProductService } from '@/services/product.service';
 import BottomSheet from '@/components/BottomSheet.vue';
 import Product from '@/product/product';
 import Button from '@/components/Button.vue';
-import ProductBuilder from '@/product/product-builder';
 import BackButton from '@/components/BackButton.vue';
 
 @Options({
@@ -55,7 +54,7 @@ import BackButton from '@/components/BackButton.vue';
 })
 
 export default class ProductDetail extends Vue {
-    product!: Product
+    product!: Product;
     showErrorMessage: boolean = false;
     formattedAllergens: string = '';
     formattedDietaryRestrictions: string = '';
@@ -78,28 +77,22 @@ export default class ProductDetail extends Vue {
     async mounted() {
         const route = useRoute();
         const barcode = route.params.barcode;
-
         if (typeof barcode === 'string') {
             await this.getProduct(barcode);
         } else {
             console.error("Barcode is not a string:", barcode);
         }
-        if (this.product)
-            this.formatData();
     }
 
     // Méthode asynchrone pour récupérer les détails du produit
     async getProduct(barcode: string) {
         this.loading = true;
         try {
-            const productService = ProductService.getInstance();
-            const response = await productService.getProductById(barcode);
-            if (response.status === 200) {
-                this.product = ProductBuilder.fromJson(response.data);
-            } else {
-                this.showErrorMessage = true;
-            }
+            const productService: ProductService = ProductService.getInstance();
+            this.product = await productService.getProductById(barcode);
+            this.formatData();
         } catch (e) {
+            this.showErrorMessage = true;
             this.error = e;
         } finally {
             this.loading = false;
@@ -108,6 +101,8 @@ export default class ProductDetail extends Vue {
 
     // Méthode pour formater les données du produit pour l'affichage
     formatData() {
+        if (this.product == null)
+            return;
         this.formattedAllergens = this.product.formatAllergens();
         this.formattedDietaryRestrictions = this.product.composition.formatDietaryRestrictions();
         this.formattedComposition = this.product.composition.formatIngredients();
