@@ -18,16 +18,16 @@ const productData  = {
 const price = 0;
 const carbonFootprint = 0;
 
-const product = new Product(
-  price,
-  productData.product_name,
-  productData.ingredients_text_en.split(', '),
-  productData.nutriscore_grade,
-  productData.image_front_url,
-  carbonFootprint,
-  productData.allergens_tags,
-  productData.labels_tags
-);
+// const product = new Product(
+//   price,
+//   productData.product_name,
+//   productData.ingredients_text_en.split(', '),
+//   productData.nutriscore_grade,
+//   productData.image_front_url,
+//   carbonFootprint,
+//   productData.allergens_tags,
+//   productData.labels_tags
+// );
 
 const routes = [
   {
@@ -39,7 +39,6 @@ const routes = [
     path: '/products/:barcode',
     name: 'product-detail',
     component: ProductDetailView,
-    props: { product: product },
     meta: { hideNavbar: true } 
   },
   {
