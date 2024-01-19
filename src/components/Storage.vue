@@ -1,7 +1,8 @@
 <template>
     <div class="storage">
         <h1>{{ title }}</h1>
-        <button type="button" v-on:click="displayAddStorage">Add inventory space</button>
+        <button type="button" class="button-addStorage" v-on:click="displayAddStorage">Add inventory space</button>
+        <button type="button" v-on:click="displayDeleteStorage">Test deletion</button>
     </div>
 
     <BottomSheet :isOpen="displayAddSheet">
@@ -10,18 +11,25 @@
             <input type="text" id="storageName" name="storageName" placeholder="Storage name">
         </div>
     </BottomSheet>
+
+    <DeleteStorage class="deleteWindow" :isOpen="storageDeletion">
+        <p>Do you really want to delete this storage ?</p>
+        <button type="button" class="cancelButton" v-on:click="cancelDeletion">Cancel</button>
+        <button type="button" class="confirmButton" v-on:click="confirmDeletion">Confirm</button>
+    </DeleteStorage>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import BottomSheet from '@/components/BottomSheet.vue';
+import DeleteStorage from '@/components/DeleteStorage.vue';
 
 @Options({
     props: {
         title: String
     },
     components: {
-        BottomSheet,
+        BottomSheet, DeleteStorage
     },
 })
 
@@ -31,6 +39,21 @@ export default class HelloWorld extends Vue {
     displayAddSheet: boolean = false
     displayAddStorage() {
         this.displayAddSheet = true
+    }
+
+    storageDeletion: boolean = false
+    displayDeleteStorage() {
+        this.storageDeletion = true
+    }
+
+    cancelDeletion() {
+        this.storageDeletion = false
+        return false
+    }
+
+    confirmDeletion() {
+        this.storageDeletion = false
+        return true
     }
 }
 </script>
@@ -52,20 +75,18 @@ h1 {
     margin-bottom: 15%;
 }
 
-button {
+.button-addStorage {
     background-color: var(--main-click-color);
     color: white;
     text-align: center;
     padding: 0.5em 1em;
     border: none;
     display: inline-block;
-    font-size: 0.5em;
     border-radius: 8px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     font-size: 1.25em;
 }
-
-button:active {
+.button-addStorage:active {
   background-color: #038555;
   box-shadow: 0 5px #777;
   transform: translateY(4px);
@@ -83,5 +104,23 @@ input {
 }
 input:focus {
     border: 2px solid #646464;
+}
+
+.cancelButton, .confirmButton {
+    display: inline-block;
+    font-size: 1em;
+    border-radius: 6px;
+    border: none;
+    padding: 10px;
+}
+.confirmButton {
+    font-weight: bold;
+    margin-left: 15%;
+}
+.confirmButton:active {
+    background-color: rgba(26, 222, 12, 0.6);
+}
+.cancelButton:active {
+    background-color: rgba(228, 12, 12, 0.6);
 }
 </style>
