@@ -1,3 +1,4 @@
+<!-- "My storage" page -->
 <template>
   <StorageComponent title="My inventory" />
   <StorageSpaceComponent storageName="Fridge" :storageProdNb="32" storageImg="fridge.png" />
