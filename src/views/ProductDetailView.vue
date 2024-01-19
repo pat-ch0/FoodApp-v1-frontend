@@ -1,5 +1,6 @@
 <template>
     <div class="product-detail" v-if="!loading">
+        <BackButton></BackButton>
         <BottomSheet v-if="showErrorMessage" :isOpen="showErrorMessage">
             <div class="product-detail-bottom-sheet">
                 <h2 class="product-detail-name">Error</h2>
@@ -43,10 +44,12 @@ import BottomSheet from '@/components/BottomSheet.vue';
 import Product from '@/product/product';
 import Button from '@/components/Button.vue';
 import ProductBuilder from '@/product/product-builder';
+import BackButton from '@/components/BackButton.vue';
 
 @Options({
     components: {
         BottomSheet,
+        BackButton,
         Button,
     },
 })
@@ -71,6 +74,7 @@ export default class ProductDetail extends Vue {
         ['E', '#e63e11'],
     ]);
 
+    // Hook appelé après que le composant soit monté
     async mounted() {
         const route = useRoute();
         const barcode = route.params.barcode;
@@ -84,6 +88,7 @@ export default class ProductDetail extends Vue {
             this.formatData();
     }
 
+    // Méthode asynchrone pour récupérer les détails du produit
     async getProduct(barcode: string) {
         this.loading = true;
         try {
@@ -101,6 +106,7 @@ export default class ProductDetail extends Vue {
         }
     }
 
+    // Méthode pour formater les données du produit pour l'affichage
     formatData() {
         this.formattedAllergens = this.product.formatAllergens();
         this.formattedDietaryRestrictions = this.product.composition.formatDietaryRestrictions();
@@ -133,6 +139,13 @@ export default class ProductDetail extends Vue {
     .product-detail-name {
         font-size: calc(3vh);
     }
+}
+
+.product-detail .back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    margin: 1em;
 }
 
 .product-detail-bottom-sheet {
