@@ -1,25 +1,37 @@
+import Product from '@/product/product';
 import { ApiService } from './api.service';
+import ProductBuilder from '@/product/product-builder';
 
-export class ProductService extends ApiService {
-    private static instance: ProductService;
-    private static endpoint: string = 'http://localhost';
-    private static port: string = '8090';
+export class ProductService extends ApiService<ProductService> {
+
     private static apiKey: string = 'products';
 
-    private constructor() {
-        super(`${ProductService.endpoint}:${ProductService.port}/${ProductService.apiKey}/`);
+    public constructor() {
+        super(`${ApiService.endpoint}:${ApiService.port}/${ProductService.apiKey}`);
     }
 
-    static getInstance(): ProductService {
-        if (!ProductService.instance) {
-            ProductService.instance = new ProductService();
+    async getProductById(id: string): Promise<Product> {
+        const response = await this.get(`${id}`);
+        const product = response.data as any;
+        if (product.error) {
+            throw new Error(`[GET /getProductById/${id}] Error while fetching product`);
         }
-        return ProductService.instance;
+        return ProductBuilder.fromJson(product);
     }
 
-    async getProductById(id: string): Promise<any> {
-        return this.get(`${id}`);
+    async addProduct(storageId: string, stock: number, barcode: string): Promise<any> {
+        return this.put(``, { storageId, stock, barcode });
     }
 
-    // Add other methods related to Product service
+    async updateProduct(storageId: string, barcode: string, newStock: number): Promise<any> {
+        return this.post(``, { storageId, stock: newStock, barcode });
+    }
+
+    async deleteProduct(storageId: string, barcode: string): Promise<any> {
+        return this.post("/delete", {
+            storageId,
+            barcode
+        });
+    }
+
 }
