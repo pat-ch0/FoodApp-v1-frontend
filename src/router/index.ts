@@ -36,8 +36,8 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/product',
-    name: 'product',
+    path: '/products/:barcode',
+    name: 'product-detail',
     component: ProductDetailView,
     props: { product: product },
     meta: { hideNavbar: true } 
@@ -56,7 +56,7 @@ const routes = [
   {
     path: '/research',
     name: 'research',
-    component: ResearchView
+    component: ResearchView,
   },
   
   // {

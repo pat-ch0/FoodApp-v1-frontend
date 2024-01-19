@@ -28,17 +28,12 @@ export default class BackButton extends Vue {
 </script>
 
 <style>
-@import "../css/variable.css";
+@import "../css/variables.css";
 
 
 .back-button {
-    position: fixed;
     width: 10px;
-    top: 8%;
-    left: 10%;
-}
-
-.back-button:hover {
-    scale: 1.1;
+    cursor: pointer;
+    scale: 1.3;
 }
 </style>

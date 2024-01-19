@@ -12,8 +12,9 @@ export default class App extends Vue { }
 
 </script>
 <style>
-html,
-body {
+html, body {
+  height: 100vh;
+  width: 100vw;
   margin: 0;
   padding: 0;
 }
@@ -24,9 +25,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-flow: column nowrap;
+  height: 100%;
+}
+
+router-view {
+  flex: 1;
+  width: 100%; 
 }
 </style>
