@@ -1,9 +1,20 @@
 import Composition from "./composition";
 import Ingredient from "./ingredient";
 import Product from "./product";
+import ProductDetail from "./product-detail";
 
 export default class ProductBuilder {
-    static fromJson(json: any): Product {
+
+    static productFromJson(json: any): Product {
+        const product = new Product();
+        product.barcode = json.barcode;
+        product.stock = json.stock;
+        product.storageId = json.storageId;
+        return product;
+    }
+    
+    
+    static productDetailFromJson(json: any): ProductDetail {
         const composition = new Composition();
         composition.vegetarian = json.composition.vegetarian;
         composition.vegan = json.composition.vegan;
@@ -20,15 +31,18 @@ export default class ProductBuilder {
             return ingredient;
         });
         
-        return new Product(
-            json.price,
-            json.name,
-            composition,
-            json.nutriScore,
-            json.imageSrc,
-            json.carbonFootprint,
-            json.allergens,
-            json.dietaryRestrictions
-        );
+        const productDetail = new ProductDetail();
+        productDetail.barcode = json.barcode;
+        productDetail.stock = json.stock;
+        productDetail.storageId = json.storageId;
+        productDetail.price = json.price;
+        productDetail.name = json.name;
+        productDetail.composition = composition;
+        productDetail.nutriScore = json.nutriScore;
+        productDetail.imageSrc = json.imageSrc;
+        productDetail.carbonFootprint = json.carbonFootprint;
+        productDetail.allergens = json.allergens;
+        productDetail.dietaryRestrictions = json.dietaryRestrictions;
+        return productDetail;
     }
 }

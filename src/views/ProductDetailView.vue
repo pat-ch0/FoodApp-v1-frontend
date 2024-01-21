@@ -22,8 +22,16 @@
                 </div>
                 <p><span class="bold">Dietary Restrictions: {{ formattedDietaryRestrictions }}</span></p>
                 <!-- <p><span class="bold">Carbon Footprint:</span> {{ formattedCarbonFootprint }}</p> -->
+                <div style="text-align: center;">
+                    <select v-if="storages.length !== 0" name="storage-name" id="product-detail-select">
+                    <option v-for="storage in storages" :key="storage.id" :value="storage.id">
+                        {{ storage.label }}
+                    </option>
+                </select>
+                <p v-else>You don't have any storage...</p>
+                </div>
                 <div class="product-detail-btn-container">
-                    <Button class="product-detail-btn" buttonText="Add to stock"></Button>
+                    <Button :callback="AddToStock" class="product-detail-btn" buttonText="Add to stock"></Button>
                 </div>
             </div>
         </BottomSheet>
@@ -41,9 +49,11 @@ import { Options, Vue } from 'vue-class-component';
 import { useRoute } from 'vue-router';
 import { ProductService } from '@/services/product.service';
 import BottomSheet from '@/components/BottomSheet.vue';
-import Product from '@/product/product';
+import ProductDetail from '@/product/product-detail';
 import Button from '@/components/Button.vue';
 import BackButton from '@/components/BackButton.vue';
+import StorageService from '@/services/storage.service';
+import Storage from '@/storage/storage';
 
 @Options({
     components: {
@@ -53,8 +63,8 @@ import BackButton from '@/components/BackButton.vue';
     },
 })
 
-export default class ProductDetail extends Vue {
-    product!: Product;
+export default class ProductDetailView extends Vue {
+    product!: ProductDetail;
     showErrorMessage: boolean = false;
     formattedAllergens: string = '';
     formattedDietaryRestrictions: string = '';
@@ -64,6 +74,8 @@ export default class ProductDetail extends Vue {
     nutriScoreColor: string = 'red';
     loading: boolean = true;
     error: any;
+    storages: Storage[] = [];
+    productService: ProductService = ProductService.getInstance();
 
     private colors: Map<string, string> = new Map([
         ['A', '#038141'],
@@ -73,12 +85,20 @@ export default class ProductDetail extends Vue {
         ['E', '#e63e11'],
     ]);
 
+    async AddToStock() {
+        const select = document.getElementById('product-detail-select') as HTMLSelectElement;
+        const selectedStorageId = select.value;
+        await this.productService.addProduct(selectedStorageId, 10, this.product.barcode)
+    }
+
     // Hook appelé après que le composant soit monté
     async mounted() {
         const route = useRoute();
         const barcode = route.params.barcode;
         if (typeof barcode === 'string') {
             await this.getProduct(barcode);
+            this.storages = await StorageService.getInstance().getAllStorages();
+            console.log(this.storages);
         } else {
             console.error("Barcode is not a string:", barcode);
         }
@@ -88,8 +108,7 @@ export default class ProductDetail extends Vue {
     async getProduct(barcode: string) {
         this.loading = true;
         try {
-            const productService: ProductService = ProductService.getInstance();
-            this.product = await productService.getProductById(barcode);
+            this.product = await this.productService.getProductById(barcode);
             this.formatData();
         } catch (e) {
             this.showErrorMessage = true;
