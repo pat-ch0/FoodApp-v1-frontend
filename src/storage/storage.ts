@@ -5,10 +5,15 @@ export default class Storage {
     label : string;
     id : string;
     products : Product[];
+    // TODO: Add a type property and set the image that matches the type
+    type?: string;
+    img? : string;
 
-    constructor(id: string, label: string) {
+    constructor(id: string, label: string, type?: string, img?: string) {
         this.label = label;
         this.id = id;
+        this.type = type;
+        this.img = img;
         this.products = [];
     }
 
