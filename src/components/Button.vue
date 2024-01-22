@@ -37,7 +37,7 @@ export default class Button extends Vue {
     line-height: 18px;
     letter-spacing: 3px;
     word-wrap: break-word;
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
     cursor: pointer;
     padding: 0 2em;
     position: relative;
