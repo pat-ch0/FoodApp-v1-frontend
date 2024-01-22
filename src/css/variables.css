@@ -1,4 +1,61 @@
 :root {
-    --main-click-color : #04AA6D;
-    --secondary-color: #FFC300;
+  /* Define primary color themes */
+  --color-primary: #04aa6d; /* Main brand color */
+  --color-secondary: #ffc300; /* Secondary color for highlights */
+  --color-text-primary: #33065f; /* Primary text color */
+
+  /* Define background colors for swiping actions */
+  --color-background-left-swipe: hsla(
+    46,
+    100%,
+    50%,
+    1
+  ); /* Left swipe background */
+  --color-background-right-swipe: hsla(
+    343,
+    100%,
+    39%,
+    1
+  ); /* Right swipe background */
+
+  /* Swiper component styles */
+  --swiper-action-width: 96px; /* Width of swiper action buttons */
+  --swiper-action-heigt: 162px; /* Height of swiper action buttons */
+  --swiper-content-padding: 1em 0; /* Padding for swiper content */
+  --swiper-transition-duration: 0.3s; /* Duration of swiper transition */
+  --swiper-action-opacity: 1; /* Opacity of swiper actions */
+
+  /* Storage component styles */
+  --storage-button-font-size: 1.25em; /* Font size of storage buttons */
+  --storage-button-radius: 8px; /* Border radius of storage buttons */
+  --storage-input-width: 65%; /* Width of storage input field */
+  --storage-input-border-radius: 14px; /* Border radius of input field */
+  --storage-input-border-color: #a4a4a4; /* Border color of input field */
+  --storage-input-focus-border-color: #646464; /* Border color on focus */
+
+  /* StorageView component styles */
+  --storage-view-image-width: 130px; /* Width of images in storage view */
+  --storage-view-info-font-size: 1.2em; /* Font size of storage info */
+  --storage-view-desktop-button-width: clamp(70px,10vw,100px); /* Responsive width of desktop buttons */
+  --storage-view-desktop-button-height: 30%; /* Height of desktop buttons */
+  --storage-view-desktop-button-icon-size: 25px; /* Size of icons in desktop buttons */
+
+  /* AddStorageForm Component */
+  --add-storage-form-padding: 1em;
+  --add-storage-form-bg-color: #fff;
+  --add-storage-form-border-radius: 10px;
+  --add-storage-form-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  --storage-input-margin-bottom: 1em;
+
+  --add-button-width: 9em;
+  --add-button-active-filter: brightness(80%);
+
+  --carousel-container-overflow: auto;
+  --carousel-container-snap-type: x mandatory;
+  --carousel-container-margin: 0 0.75em;
+
+  --carousel-item-width: 100px;
+  --carousel-item-opacity: 0.5;
+  --carousel-item-active-opacity: 1;
 }

@@ -34,17 +34,29 @@ export default class StorageService extends ApiService<StorageService> {
         return storageElem; 
     }
 
-    async createStorage(label: string): Promise<Storage> {
-        const response = await this.put(``, {label : label });
-        console.log((response as any).name);
-        if ((response as any).name == "AxiosError") {
-            throw new ApiStorageError(`[PUT /createStorage] Error while creating storage`);
+    async createStorage(storageData: { label: string; type: string; prodNb: number; img: string }): Promise<Storage> {
+        try {
+            const response = await this.post('', storageData);
+            const storage = response.data as any;
+            console.log('Created Storage:', storage);
+            return new Storage(storage.id, storage.type, storage.label, storage.img);
+        } catch (error) {
+            console.error('Error creating storage:', error);
+            throw new ApiStorageError(`[POST /createStorage] Error while creating storage`);
         }
-        const storage = response.data as any;
-        const storageElem = new Storage(storage.id, storage.label);
-        storageElem.setProductsFromJson(storage.products);
-        return storageElem;
     }
+    
+    // async createStorage(label: string): Promise<Storage> {
+    //     const response = await this.put(``, {label : label });
+    //     console.log((response as any).name);
+    //     if ((response as any).name == "AxiosError") {
+    //         throw new ApiStorageError(`[PUT /createStorage] Error while creating storage`);
+    //     }
+    //     const storage = response.data as any;
+    //     const storageElem = new Storage(storage.id, storage.label);
+    //     storageElem.setProductsFromJson(storage.products);
+    //     return storageElem;
+    // }
     
     async deleteStorageById(id: string): Promise<boolean> {
         const response = await this.delete(`${id}`);

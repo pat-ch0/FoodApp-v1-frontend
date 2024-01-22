@@ -1,135 +1,190 @@
 <template>
-    <!-- Top of the page : Title and "Add storage" button -->
-    <div class="storage">
-        <h1>{{ title }}</h1>
-        <button type="button" class="button-addStorage" v-on:click="displayAddStorage">Add inventory space</button>
-    </div>
+  <!-- Top of the page: Title and "Add storage" button -->
+  <div class="storage">
+    <h1 class="storage-title">{{ title }}</h1>
+    <button class="storage-button" type="button" @click="displayAddStorage">Add inventory space</button>
+    <StorageView :storageItems="storageItems" @delete-storage="handleDeleteRequest" />
 
-    <!-- Add a storage sheet -->
+    <!-- Add storage form in a bottom sheet -->
     <BottomSheet :isOpen="displayAddSheet">
-        <div class="add-bottom-sheet">
-            <h2>Add storage</h2>
-            <input type="text" id="storageName" name="storageName" placeholder="Storage name">
-        </div>
+      <AddStorageForm @storage-added="onStorageAdded" />
     </BottomSheet>
 
-    <!-- Delete storage notification -->
-    <DeleteStorage class="deleteWindow" :isOpen="storageDeletion">
-        <p>Do you really want to delete this storage ?</p>
-        <button type="button" class="cancelButton" v-on:click="cancelDeletion">Cancel</button>
-        <button type="button" class="confirmButton" v-on:click="confirmDeletion">Confirm</button>
+    <!-- Delete storage confirmation modal -->
+    <DeleteStorage :isOpen="storageDeletion">
+      <p>Do you really want to delete this storage?</p>
+      <button class="cancelButton" @click="cancelDeletion">Cancel</button>
+      <button class="confirmButton" @click="confirmDeletion">Confirm</button>
     </DeleteStorage>
+  </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import StorageView from '@/views/StorageView.vue';
 import BottomSheet from '@/components/BottomSheet.vue';
 import DeleteStorage from '@/components/DeleteStorage.vue';
+import AddStorageForm from '@/components/AddStorageForm.vue';
+import StorageService from '@/services/storage.service';
 
 @Options({
-    props: {
-        title: String
-    },
-    components: {
-        BottomSheet, DeleteStorage
-    },
+  components: {
+    BottomSheet,
+    DeleteStorage,
+    StorageView,
+    AddStorageForm
+  },
+  props: {
+    title: String
+  }
 })
+export default class Storage extends Vue {
+  title!: string;
+  displayAddSheet: boolean = false;
+  storageService = new StorageService();
+  storageToDeleteId = '';
 
-export default class HelloWorld extends Vue {
-    title!: string
+  storageItems = [
+    { id: 'defaultFridge', label: 'Fridge', type: 'Fridge', prodNb: 32, img: 'fridge.png' },
+    { id: 'defaultFreezer', label: 'Freezer', type: 'Freezer', prodNb: 16, img: 'freezer.png' },
+    { id: 'defaultCellar', label: 'Cellar', type: 'Cellar', prodNb: 24, img: 'cellar.png' }
+    // More items can be added here
+  ];
 
-    displayAddSheet: boolean = false
-    displayAddStorage() {
-        this.displayAddSheet = true
+  handleDeleteRequest(id: string) {
+    this.storageToDeleteId = id;
+    this.storageDeletion = true;
+  }
+
+  onStorageAdded(newStorage:any) {
+    this.storageItems.push({
+      id: newStorage.id,
+      prodNb: newStorage.products.length,
+      label: newStorage.label,
+      type: newStorage.type || 'Fridge',
+      img: newStorage.img || 'fridge.png'
+    });
+    this.displayAddSheet = false;
+  }
+
+  async deleteStorage(id: string) {
+    try {
+      const success = await this.storageService.deleteStorageById(id);
+      if (success) {
+        this.storageItems = this.storageItems.filter(item => item.id !== id);
+        console.log(`Storage with id ${id} deleted successfully`);
+      }
+    } catch (error) {
+      console.error('Error deleting storage:', error);
     }
+  }
 
-    storageDeletion: boolean = false
-    displayDeleteStorage() {
-        this.storageDeletion = true
-    }
+  displayAddStorage() {
+    this.displayAddSheet = true;
+  }
 
-    cancelDeletion() {
-        this.storageDeletion = false
-        console.log(false)
-        return false
-    }
+  storageDeletion: boolean = false;
 
-    confirmDeletion() {
-        this.storageDeletion = false
-        console.log(true)
-        return true
+  cancelDeletion() {
+    this.storageDeletion = false;
+  }
+
+  async confirmDeletion() {
+    if (this.storageToDeleteId) {
+      await this.deleteStorage(this.storageToDeleteId);
+      this.storageToDeleteId = '';
     }
+    this.storageDeletion = false;
+  }
 }
 </script>
-  
+
 <style scoped>
 @import '../css/variables.css';
 
 .storage {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    margin-left: 3%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 
-h1 {
-    color: #33065f;
-    float: left;
-    font-size: 2em;
-    margin-bottom: 15%;
+.storage-title {
+  color: var(--color-text-primary);
+  float: left;
+  font-size: 2em;
+  margin-bottom: 15%;
 }
 
-.button-addStorage {
-    background-color: var(--main-click-color);
-    color: white;
-    text-align: center;
-    padding: 0.5em 1em;
-    border: none;
-    display: inline-block;
-    border-radius: 8px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    font-size: 1.25em;
+.storage-button {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  padding: 0.5em 1em;
+  border: none;
+  display: inline-block;
+  font-size: var(--storage-button-font-size);
+  border-radius: var(--storage-button-radius);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 3%;
+  margin-bottom: 1em;
 }
-.button-addStorage:active {
+
+.storage-button:active {
   background-color: #038555;
   box-shadow: 0 5px #777;
   transform: translateY(4px);
 }
 
-input {
-    width: 65%;
-    padding: 6px 10px;
-    margin: 12px 0;
-    box-sizing: border-box;
-    border-radius: 14px;
-    border: 2px solid #a4a4a4;
-    -webkit-transition: 0.5s;
-    transition: 0.5s;
-}
-input:focus {
-    border: 2px solid #646464;
+.storage-input {
+  width: var(--storage-input-width);
+  padding: 6px 10px;
+  margin: 12px 0;
+  box-sizing: border-box;
+  border-radius: var(--storage-input-border-radius);
+  border: 2px solid var(--storage-input-border-color);
+  transition: 0.5s;
 }
 
-.cancelButton, .confirmButton {
-    display: inline-block;
-    font-size: 1em;
-    border-radius: 6px;
-    border: none;
-    padding: 10px;
+.storage-input:focus {
+  border: 2px solid var(--storage-input-focus-border-color);
 }
+
+.cancelButton,
 .confirmButton {
-    font-weight: bold;
-    margin-left: 15%;
-    color: white;
-    background-color: rgb(255, 0, 0);
+  display: inline-block;
+  font-size: 1em;
+  border-radius: 6px;
+  border: none;
+  padding: 10px;
 }
+
+.confirmButton {
+  font-weight: bold;
+  margin-left: 15%;
+  color: white;
+  background-color: rgb(255, 0, 0);
+}
+
 .cancelButton {
-    background-color: rgb(210, 210, 210);
+  background-color: rgb(210, 210, 210);
 }
+
 .confirmButton:active {
-    background-color: rgba(215, 10, 10, 0.7);
+  background-color: rgba(215, 10, 10, 0.7);
 }
+
 .cancelButton:active {
-    background-color: rgba(26, 222, 12, 0.7);
+  background-color: rgba(26, 222, 12, 0.7);
+}
+
+.add-button {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 </style>
