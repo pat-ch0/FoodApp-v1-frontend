@@ -13,7 +13,8 @@
             <div class="separator"></div>
             <p class="research-view-paragraph">To search a product, you can use your mobile or take a picture of
                 the barcode and you will get the product details. </p>
-            <Button buttonText="SCAN" :callback="test"></Button>
+            <Button buttonText="SCAN" @click="toggleScannerVisibility"></Button>
+            <BarcodeScanner v-if="isScannerVisible" @onBarcodeScanned="handleBarcodeScanned" @closeScanner="toggleScannerVisibility" />
         </div>
     </div>
 </template>
@@ -26,6 +27,8 @@ import { Options, Vue } from 'vue-class-component';
 import Button from '@/components/Button.vue';
 import BackButton from '@/components/BackButton.vue';
 import SearchBar from '@/components/SearchBar.vue';
+import BarcodeScanner from '@/components/BarcodeScanner.vue';
+import { useRouter } from 'vue-router';
 
 // On reçois des composants, @Options traduira les class créer.
 @Options({
@@ -34,17 +37,25 @@ import SearchBar from '@/components/SearchBar.vue';
     {
         Button,
         BackButton,
-        SearchBar
+        SearchBar,
+        BarcodeScanner
     },
 })
 // On exporte une class avec des informations potentiel.
 export default class ResearchView extends Vue {
+    router = useRouter();
+    isScannerVisible = false;
 
-    // Ici la fonction test qui appelera un console.log pour savoir si le boutons passe dans la fonction. Qui permettra un usage générique.
-    test() {
-        console.log("Wlh")
+    toggleScannerVisibility() {
+        this.isScannerVisible = !this.isScannerVisible;
     }
 
+    handleBarcodeScanned(barcodeText: string) {
+        console.log('Scanned Barcode:', barcodeText);
+
+        // Redirection to product details page
+        this.router.push(`/products/${barcodeText}`);
+    }
 }
 
 </script>

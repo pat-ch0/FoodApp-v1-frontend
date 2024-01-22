@@ -13,6 +13,7 @@
     "axios": "^1.6.5",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
+    "vue-barcode-reader": "^1.0.3",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.3"
   },
@@ -20,6 +21,7 @@
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@jest/types": "^29.6.3",
+    "@types/vue-barcode-reader": "^0.0.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
