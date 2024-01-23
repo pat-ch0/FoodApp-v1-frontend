@@ -15,7 +15,11 @@
     <input class="storage-input" type="text" v-model="newStorageName" @keyup.enter="addStorage"
       placeholder="Storage name">
     <!-- Button to submit the form and add storage -->
-    <button class="add-button" @click="addStorage">Add</button>
+    <div class="button-bottom">
+      <button class="close-button" @click="closeStorage">Close</button>
+      <button class="add-button" @click="addStorage">Add</button>
+    </div>
+
   </div>
 </template>
 
@@ -24,11 +28,11 @@ import { Options, Vue } from 'vue-class-component';
 import StorageService from '@/services/storage.service';
 
 @Options({
-  emits: ['storage-added']
+  emits: ['storage-added', "close"]
 })
 export default class AddStorageForm extends Vue {
   newStorageName = '';
-  storageService = new StorageService();
+  storageService = StorageService.getInstance();
   storageOptions = [
     { type: 'Fridge', img: 'fridge.png' },
     { type: 'Freezer', img: 'freezer.png' },
@@ -36,37 +40,20 @@ export default class AddStorageForm extends Vue {
   ];
   selectedIndex = 0;
 
-  // Handles selection of storage type
   selectStorageType(index: number) {
     this.selectedIndex = index;
   }
 
   // Handles adding of new storage
   async addStorage() {
-    if (!this.newStorageName) {
-      console.error('Storage name is required');
-      return;
-    }
+    const button = document.querySelector('.add-button') as HTMLButtonElement;
+    button.disabled = true;
+    await this.storageService.createStorage(this.newStorageName, this.storageOptions[this.selectedIndex].type, this.storageOptions[this.selectedIndex].img);
+    this.$emit('storage-added');
+  }
 
-    // Prepares storage data for submission
-    const selectedStorage = this.storageOptions[this.selectedIndex];
-    const storageData = {
-      label: this.newStorageName,
-      type: selectedStorage.type,
-      prodNb: 0,
-      img: selectedStorage.img
-    };
-
-    try {
-      // Calls service to create new storage and emits event
-      const newStorage = await this.storageService.createStorage(storageData);
-      this.$emit('storage-added', newStorage);
-      // Resets the form after successful addition
-      this.newStorageName = '';
-      this.selectedIndex = 0;
-    } catch (error) {
-      console.error('Error adding new storage:', error);
-    }
+  async closeStorage() {
+    this.$emit('close');
   }
 }
 </script>
@@ -99,7 +86,14 @@ export default class AddStorageForm extends Vue {
   border: 2px solid var(--storage-input-focus-border-color);
 }
 
-.add-button {
+.button-bottom {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--button-bottom-margin-top);
+}
+
+.add-button, .close-button {
   width: var(--add-button-width);
   background-color: var(--color-primary);
   color: white;
@@ -108,6 +102,12 @@ export default class AddStorageForm extends Vue {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-left: 1em;
+}
+
+.close-button {
+  background-color: rgb(235, 38, 38);
+  margin-right: var(--close-button-margin-right);
 }
 
 .add-button:active {

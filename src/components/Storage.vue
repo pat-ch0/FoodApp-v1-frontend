@@ -1,100 +1,69 @@
 <template>
-  <!-- Top of the page: Title and "Add storage" button -->
-  <div class="storage">
-    <h1 class="storage-title">{{ title }}</h1>
-    <button class="storage-button" type="button" @click="displayAddStorage">Add inventory space</button>
-    <StorageView :storageItems="storageItems" @delete-storage="handleDeleteRequest" />
-
-    <!-- Add storage form in a bottom sheet -->
-    <BottomSheet :isOpen="displayAddSheet">
-      <AddStorageForm @storage-added="onStorageAdded" />
-    </BottomSheet>
-
-    <!-- Delete storage confirmation modal -->
-    <DeleteStorage :isOpen="storageDeletion">
-      <p>Do you really want to delete this storage?</p>
-      <button class="cancelButton" @click="cancelDeletion">Cancel</button>
-      <button class="confirmButton" @click="confirmDeletion">Confirm</button>
-    </DeleteStorage>
-  </div>
+  <Swiper @swipe-left="handleSwipeLeft" @swipe-right="handleSwipeRight">
+    <template v-slot:left>
+      <!-- Left swipe content for "modify" action -->
+      <i class="swipe-icon swipe-icon-left"><img src="../assets/icons/pencil.svg" alt="Edit Icon" class="icon" /></i>
+    </template>
+    <template v-slot:right>
+      <!-- Right swipe content for "delete" action -->
+      <i class="swipe-icon swipe-icon-right"><img @click="emitDeleteStorage" src="../assets/icons/trash.svg"
+          alt="Delete Icon" class="icon" /></i>
+    </template>
+    <template v-slot:desktop-actions>
+      <button @click="handleSwipeLeft" class="desktop-swipe-button left">
+        <img src="../assets/icons/pencil.svg" alt="Modify" />
+      </button>
+      <button @click="emitDeleteStorage" class="desktop-swipe-button right">
+        <img src="../assets/icons/trash.svg" alt="Delete" />
+      </button>
+    </template>
+    <div class="storage-item" @click="goToThisStorage">
+      <img 
+      :src="imagePath"
+      class="storage-image">
+      <div class="storage-info">
+        <h3>{{ storage.label }}</h3>
+        <p>Referenced products: {{ storage.getNbProducts() }}</p>
+      </div>
+    </div>
+  </Swiper>
 </template>
 
 <script lang="ts">
+import StorageType from '@/storage/storage-type';
 import { Options, Vue } from 'vue-class-component';
-import StorageView from '@/views/StorageView.vue';
-import BottomSheet from '@/components/BottomSheet.vue';
-import DeleteStorage from '@/components/DeleteStorage.vue';
-import AddStorageForm from '@/components/AddStorageForm.vue';
-import StorageService from '@/services/storage.service';
+import Swiper from '@/components/Swiper.vue';
 
 @Options({
   components: {
-    BottomSheet,
-    DeleteStorage,
-    StorageView,
-    AddStorageForm
+    Swiper
   },
   props: {
-    title: String
-  }
+    storage: StorageType,
+    imagePath: String
+  },
+  emits: ['delete-storage']
 })
 export default class Storage extends Vue {
-  title!: string;
-  displayAddSheet: boolean = false;
-  storageService = new StorageService();
-  storageToDeleteId = '';
+  storage!: StorageType;
+  imagePath!: string;
 
-  storageItems = [
-    { id: 'defaultFridge', label: 'Fridge', type: 'Fridge', prodNb: 32, img: 'fridge.png' },
-    { id: 'defaultFreezer', label: 'Freezer', type: 'Freezer', prodNb: 16, img: 'freezer.png' },
-    { id: 'defaultCellar', label: 'Cellar', type: 'Cellar', prodNb: 24, img: 'cellar.png' }
-    // More items can be added here
-  ];
 
-  handleDeleteRequest(id: string) {
-    this.storageToDeleteId = id;
-    this.storageDeletion = true;
+  goToThisStorage() {
+    this.$router.push(`/storage/${this.storage.id}`);
   }
 
-  onStorageAdded(newStorage:any) {
-    this.storageItems.push({
-      id: newStorage.id,
-      prodNb: newStorage.products.length,
-      label: newStorage.label,
-      type: newStorage.type || 'Fridge',
-      img: newStorage.img || 'fridge.png'
-    });
-    this.displayAddSheet = false;
+  handleSwipeLeft() {
+    console.log('Swiped left on', this.storage.label);
   }
 
-  async deleteStorage(id: string) {
-    try {
-      const success = await this.storageService.deleteStorageById(id);
-      if (success) {
-        this.storageItems = this.storageItems.filter(item => item.id !== id);
-        console.log(`Storage with id ${id} deleted successfully`);
-      }
-    } catch (error) {
-      console.error('Error deleting storage:', error);
-    }
+  handleSwipeRight() {
+    console.log('Swiped right on', this.storage.id, ' ', this.storage.label);
   }
 
-  displayAddStorage() {
-    this.displayAddSheet = true;
-  }
-
-  storageDeletion: boolean = false;
-
-  cancelDeletion() {
-    this.storageDeletion = false;
-  }
-
-  async confirmDeletion() {
-    if (this.storageToDeleteId) {
-      await this.deleteStorage(this.storageToDeleteId);
-      this.storageToDeleteId = '';
-    }
-    this.storageDeletion = false;
+  emitDeleteStorage() {
+    console.log(this.storage);
+    this.$emit('delete-storage', this.storage.id);
   }
 }
 </script>
@@ -102,89 +71,84 @@ export default class Storage extends Vue {
 <style scoped>
 @import '../css/variables.css';
 
-.storage {
+.swiper {
+  width: 100%;
+}
+
+.storage-item {
   display: flex;
-  flex-direction: column;
-  align-items: start;
+  align-items: center;
+  width: 100%;
+  padding: 0 0.5em;
 }
 
-.storage-title {
-  color: var(--color-text-primary);
-  float: left;
-  font-size: 2em;
-  margin-bottom: 15%;
+.storage-image {
+  width: var(--storage-view-image-width);
+  margin-right: 15px;
 }
 
-.storage-button {
-  background-color: var(--color-primary);
-  color: white;
-  text-align: center;
-  padding: 0.5em 1em;
-  border: none;
-  display: inline-block;
-  font-size: var(--storage-button-font-size);
-  border-radius: var(--storage-button-radius);
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  margin-left: 3%;
-  margin-bottom: 1em;
+.storage-info {
+  flex: 1;
 }
 
-.storage-button:active {
-  background-color: #038555;
-  box-shadow: 0 5px #777;
-  transform: translateY(4px);
+.storage-info h3 {
+  margin: 0;
+  font-size: var(--storage-view-info-font-size);
 }
 
-.storage-input {
-  width: var(--storage-input-width);
-  padding: 6px 10px;
-  margin: 12px 0;
-  box-sizing: border-box;
-  border-radius: var(--storage-input-border-radius);
-  border: 2px solid var(--storage-input-border-color);
-  transition: 0.5s;
+.storage-info p {
+  margin: 0;
 }
 
-.storage-input:focus {
-  border: 2px solid var(--storage-input-focus-border-color);
+.swipe-icon {
+  color: #fff;
+  width: var(--swiper-action-width);
+  height: var(--swiper-action-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.cancelButton,
-.confirmButton {
-  display: inline-block;
-  font-size: 1em;
-  border-radius: 6px;
-  border: none;
-  padding: 10px;
+.swipe-icon-left {
+  background-color: var(--color-background-left-swipe);
 }
 
-.confirmButton {
-  font-weight: bold;
-  margin-left: 15%;
-  color: white;
-  background-color: rgb(255, 0, 0);
+.swipe-icon-right {
+  background-color: var(--color-background-right-swipe);
 }
 
-.cancelButton {
-  background-color: rgb(210, 210, 210);
+.storage-view .desktop-swipe-button {
+  display: none;
+  /* Hide by default */
 }
 
-.confirmButton:active {
-  background-color: rgba(215, 10, 10, 0.7);
-}
+@media (min-width: 600px) {
+  .storage-view .desktop-swipe-button {
+    display: flex;
+    width: var(--storage-view-desktop-button-width);
+    height: var(--storage-view-desktop-button-height);
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    padding: 10px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 
-.cancelButton:active {
-  background-color: rgba(26, 222, 12, 0.7);
-}
+  .storage-view .desktop-swipe-button.left {
+    background-color: var(--color-background-left-swipe);
+  }
 
-.add-button {
-  background-color: var(--color-primary);
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  margin-left: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  .storage-view .desktop-swipe-button.right {
+    background-color: var(--color-background-right-swipe);
+  }
+
+  .storage-view .desktop-swipe-button img {
+    width: var(--storage-view-desktop-button-icon-size);
+    height: auto;
+  }
 }
 </style>

@@ -11,7 +11,6 @@ export default class ProductDetail extends Product {
     allergens!: string[];
     dietaryRestrictions!: string[];
 
-
     public formatAllergens(): string {
         return this.allergens && this.allergens.length > 0
             ? this.allergens.join(', ').replace(/en:/g, '')

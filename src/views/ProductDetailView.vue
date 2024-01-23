@@ -9,7 +9,7 @@
         </BottomSheet>
         <img class="product-detail-img" v-else :src="product.imageSrc" alt="Product image">
         <BottomSheet :isOpen="!showErrorMessage">
-            <div class="product-detail-bottom-sheet">
+            <div v-if="productDetail" class="product-detail-bottom-sheet">
                 <h2 class="product-detail-name">{{ product.name }}</h2>
                 <!-- <p>{{ formattedPrice }} / Each</p> -->
                 <p><span class="bold">Composition :</span> {{ formattedComposition }}</p>
@@ -22,22 +22,13 @@
                 </div>
                 <p><span class="bold">Dietary Restrictions: {{ formattedDietaryRestrictions }}</span></p>
                 <!-- <p><span class="bold">Carbon Footprint:</span> {{ formattedCarbonFootprint }}</p> -->
-                <div style="text-align: center;">
-                    <select v-if="storages.length !== 0" name="storage-name" id="product-detail-select">
-                    <option v-for="storage in storages" :key="storage.id" :value="storage.id">
-                        {{ storage.label }}
-                    </option>
-                </select>
-                <p v-else>You don't have any storage...</p>
-                </div>
                 <div class="product-detail-btn-container">
                     <Button :callback="AddToStock" class="product-detail-btn" buttonText="Add to stock"></Button>
                 </div>
+                <AddProduct :close="closeModalAddProduct" :isOpen="addProductModal" :storages="storages" :product="product"></AddProduct>
             </div>
         </BottomSheet>
     </div>
-
-    <!-- TODO: Make a component of this loader | CSS at bottom -->
     <div v-else>
         <!-- Loading spinner -->
         <img src="../assets/images/loader/loader.webp" class="loader-spinner" alt="Loading...">
@@ -53,19 +44,22 @@ import ProductDetail from '@/product/product-detail';
 import Button from '@/components/Button.vue';
 import BackButton from '@/components/BackButton.vue';
 import StorageService from '@/services/storage.service';
-import Storage from '@/storage/storage';
+import Storage from '@/storage/storage-type';
+import AddProduct from '@/components/AddProduct.vue';
 
 @Options({
     components: {
         BottomSheet,
         BackButton,
         Button,
+        AddProduct
     },
 })
 
 export default class ProductDetailView extends Vue {
     product!: ProductDetail;
     showErrorMessage: boolean = false;
+    addProductModal: boolean = false;
     formattedAllergens: string = '';
     formattedDietaryRestrictions: string = '';
     formattedComposition: string = '';
@@ -76,6 +70,7 @@ export default class ProductDetailView extends Vue {
     error: any;
     storages: Storage[] = [];
     productService: ProductService = ProductService.getInstance();
+    productDetail: boolean = true;
 
     private colors: Map<string, string> = new Map([
         ['A', '#038141'],
@@ -85,10 +80,12 @@ export default class ProductDetailView extends Vue {
         ['E', '#e63e11'],
     ]);
 
-    async AddToStock() {
-        const select = document.getElementById('product-detail-select') as HTMLSelectElement;
-        const selectedStorageId = select.value;
-        await this.productService.addProduct(selectedStorageId, 10, this.product.barcode)
+    AddToStock() {
+        this.addProductModal = true;
+    }
+
+    closeModalAddProduct() {
+        this.addProductModal = false;
     }
 
     // Hook appelé après que le composant soit monté
@@ -98,7 +95,6 @@ export default class ProductDetailView extends Vue {
         if (typeof barcode === 'string') {
             await this.getProduct(barcode);
             this.storages = await StorageService.getInstance().getAllStorages();
-            console.log(this.storages);
         } else {
             console.error("Barcode is not a string:", barcode);
         }

@@ -1,155 +1,163 @@
 <!-- "My storage" page -->
 <template>
   <div class="storage-view">
-    <Swiper v-for="item in storageItems" :key="item.label" @swipe-left="handleSwipeLeft(item.label)"
-      @swipe-right="handleSwipeRight(item.id, item.label)">
-      <template v-slot:left>
-        <!-- Left swipe content for "modify" action -->
-        <i class="swipe-icon swipe-icon-left"><img src="../assets/icons/pencil.svg" alt="Edit Icon" class="icon" /></i>
-      </template>
-      <template v-slot:right>
-        <!-- Right swipe content for "delete" action -->
-        <i class="swipe-icon swipe-icon-right"  ><img @click="emitDeleteStorage(item.id)" src="../assets/icons/trash.svg" alt="Delete Icon" class="icon" /></i>
-      </template>
-      <template v-slot:desktop-actions>
-        <button @click="handleSwipeLeft(item.label)" class="desktop-swipe-button left">
-          <img src="../assets/icons/pencil.svg" alt="Modify" />
-        </button>
-        <button @click="emitDeleteStorage(item.id)" class="desktop-swipe-button right">
-          <img src="../assets/icons/trash.svg" alt="Delete" />
-        </button>
-      </template>
-      <div class="storage-item">
-        <img :src="require(`@/assets/icons/${item.img}`)" :alt="item.label" class="storage-image">
-        <div class="storage-info">
-          <h3>{{ item.label }}</h3>
-          <p>Referenced products: {{ item.prodNb }}</p>
-        </div>
-      </div>
-    </Swiper>
+    <button class="storage-button" type="button" @click="displayAddStorage">Add inventory space</button>
+    <div class="storage-list">
+      <Storage v-for="storage in storageItems" :key="storage.id" :imagePath="require(`@/assets/icons/${storage.img}`)" :storage="storage"
+        @delete-storage="handleDeleteRequest" />
+    </div>
+    <BottomSheet :isOpen="displayAddSheet">
+      <AddStorageForm @close="closeDisplayAddSheet" @storage-added="onStorageAdded" />
+    </BottomSheet>
+    <DeleteStorage :isOpen="storageDeletion">
+      <p>Do you really want to delete this storage?</p>
+      <button class="cancelButton" @click="cancelDeletion">Cancel</button>
+      <button class="confirmButton" @click="confirmDeletion">Confirm</button>
+    </DeleteStorage>
   </div>
 </template>
 
 <script lang="ts">
-import Swiper from '@/components/Swiper.vue';
 import { Options, Vue } from 'vue-class-component';
+import DeleteStorage from '@/components/DeleteStorage.vue';
+import BottomSheet from '@/components/BottomSheet.vue';
+import StorageService from '@/services/storage.service';
+import StorageType from '@/storage/storage-type';
+import Storage from '@/components/Storage.vue';
+import AddStorageForm from '@/components/AddStorageForm.vue';
 
 @Options({
   components: {
-    Swiper
+    Storage,
+    DeleteStorage,
+    BottomSheet,
+    AddStorageForm
   },
   props: {
-    storageItems: Array
   }
 })
 
 export default class StorageView extends Vue {
-  storageItems!: Array<{ id: string, label: string; prodNb: number; img: string }>;
+  displayAddSheet: boolean = false;
+  storageDeletion: boolean = false;
+  storageService = StorageService.getInstance();
+  storageItems: StorageType[] = [];
+  storageToDeleteId: string = '';
 
-  handleSwipeLeft(label: string) {
-    console.log('Swiped left on', label);
-    // Handle left swipe action
+  // on mount, fetch all storages
+  async mounted() {
+    this.storageItems = await this.storageService.getAllStorages();
   }
 
-  handleSwipeRight(id: string, label: string) {
-    console.log('Swiped right on', id, ' ', label);
+  async onStorageAdded() {
+    this.storageItems = await this.storageService.getAllStorages();
+    this.displayAddSheet = false;
   }
 
-  emitDeleteStorage(id: string) {
-    console.log("emit delete storage");
-    
-    this.$emit('delete-storage', id);
+  closeDisplayAddSheet() {
+    this.displayAddSheet = false;
   }
+
+  displayAddStorage() {
+    this.displayAddSheet = true;
+  }
+
+  handleDeleteRequest(id: string) {
+    this.storageToDeleteId = id;
+    this.storageDeletion = true;
+  }
+
+
+  cancelDeletion() {
+    this.storageDeletion = false;
+  }
+
+  async confirmDeletion() {
+    if (this.storageToDeleteId) {
+      await this.deleteStorage(this.storageToDeleteId);
+    }
+    this.storageDeletion = false;
+  }
+
+  async deleteStorage(id: string) {
+    try {
+      const success = await this.storageService.deleteStorageById(id);
+      if (success) {
+        this.storageItems = this.storageItems.filter(item => item.id !== id);
+      }
+    } catch (error) {
+      console.error('Error deleting storage:', error);
+    }
+  }
+
 }
 </script>
 
 <style scoped>
 @import "../css/variables.css";
 
-.storage-view {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
 
-.swiper {
-  width: 100%;
+.storage-view{
+  padding-top: 6em;
+  overflow: hidden;
 }
-
-.storage-item {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0 0.5em;
-}
-
-.storage-image {
-  width: var(--storage-view-image-width);
-  margin-right: 15px;
-}
-
-.storage-info {
-  flex: 1;
-}
-
-.storage-info h3 {
-  margin: 0;
-  font-size: var(--storage-view-info-font-size);
-}
-
-.storage-info p {
-  margin: 0;
-}
-
-.swipe-icon {
-  color: #fff;
-  width: var(--swiper-action-width);
-  height: var(--swiper-action-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.swipe-icon-left {
-  background-color: var(--color-background-left-swipe);
-}
-
-.swipe-icon-right {
-  background-color: var(--color-background-right-swipe);
-}
-
-.storage-view .desktop-swipe-button {
-  display: none;
-  /* Hide by default */
+.storage-list {
+  overflow-y: scroll;
+  max-height: 73vh;
+  min-height: 73vh;
 }
 
 @media (min-width: 600px) {
-  .storage-view .desktop-swipe-button {
-    display: flex;
-    width: var(--storage-view-desktop-button-width);
-    height: var(--storage-view-desktop-button-height);
-    align-items: center;
-    justify-content: center;
-    margin: 5px;
-    padding: 10px;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  .storage-list {
+    max-height: 100vh;
+    min-height: 100vh;
   }
+}
 
-  .storage-view .desktop-swipe-button.left {
-    background-color: var(--color-background-left-swipe);
-  }
+.cancelButton,
+.confirmButton {
+  display: inline-block;
+  font-size: 1em;
+  border-radius: 6px;
+  border: none;
+  padding: 10px;
+}
+.confirmButton {
+  font-weight: bold;
+  margin-left: 15%;
+  color: white;
+  background-color: rgb(255, 0, 0);
+}
 
-  .storage-view .desktop-swipe-button.right {
-    background-color: var(--color-background-right-swipe);
-  }
+.cancelButton {
+  background-color: rgb(210, 210, 210);
+}
 
-  .storage-view .desktop-swipe-button img {
-    width: var(--storage-view-desktop-button-icon-size);
-    height: auto;
-  }
+.confirmButton:active {
+  background-color: rgba(215, 10, 10, 0.7);
+}
+
+.cancelButton:active {
+  background-color: rgba(26, 222, 12, 0.7);
+}
+
+.storage-button {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  padding: 0.5em 1em;
+  border: none;
+  display: inline-block;
+  font-size: var(--storage-button-font-size);
+  border-radius: var(--storage-button-radius);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 3%;
+  margin-bottom: 1em;
+}
+
+.storage-button:active {
+  background-color: #038555;
+  box-shadow: 0 5px #777;
+  transform: translateY(4px);
 }
 </style>
