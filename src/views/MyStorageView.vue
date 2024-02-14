@@ -1,10 +1,10 @@
 <template>
   <div class="product-detail" v-if="!loading">
-    <StorageComponent :title=currentStorage.label btnText="Add Product" />
-    <SearchBar/>
-    <StorageSpaceComponent storageName="Fridge" :storageProdNb="32" storageImg="fridge.png" />
-    <StorageSpaceComponent storageName="Freezer" :storageProdNb="16" storageImg="freezer.png" />
-    <StorageSpaceComponent storageName="Cellar" :storageProdNb="24" storageImg="cellar.png" />
+    <button class="storage-button" type="button" @click="displayAddStorage">Add inventory space</button>
+    <h2>{{ currentStorage.label }}</h2>
+    <SearchBar />
+    <p v-for="productsDetails in currentStorage.productsDetails" :key="productsDetails.barcode" :imagePath="productsDetails.imageSrc"
+      :storage="productsDetails" @delete-storage="handleDeleteRequest">{{ productsDetails.name }} {{ productsDetails.stock }}</p>
   </div>
   <div v-else>
     <img src="../assets/images/loader/loader.webp" class="loader-spinner" alt="Loading...">
@@ -12,41 +12,80 @@
 </template>
     
 <script lang="ts">
-import StorageComponent from '@/components/Storage.vue'
 import StorageSpaceComponent from '@/components/StorageSpace.vue'
 import StorageService from '@/services/storage.service'
-import Storage from '@/storage/storage';
+import StorageType from '@/storage/storage-type';
 import { Options, Vue } from 'vue-class-component'
 import SearchBar from '@/components/SearchBar.vue';
 import { useRoute } from 'vue-router';
+import Storage from '@/components/Storage.vue';
 
 @Options({
   components: {
-    StorageComponent, 
-    StorageSpaceComponent, 
-    SearchBar
+    StorageSpaceComponent,
+    SearchBar,
+    Storage
   }
 })
 
 export default class MyStorageView extends Vue {
   loading = true;
   storageService = StorageService.getInstance();
-  currentStorage!: Storage;
+  currentStorage!: StorageType;
+
+  handleDeleteRequest(barcode: string) {
+    console.log("Delete request for barcode:", barcode);
+  }
+  
+  displayAddStorage() {
+    // go to research
+    this.$router.push({ name: 'research' });
+  }
 
   async mounted() {
     const route = useRoute();
     const idStorage = route.params.idStorage;
     if (typeof idStorage === 'string') {
-      console.log(idStorage);
       this.currentStorage = await this.storageService.getStorageById(idStorage);
-      console.log(this.currentStorage);
+      await this.currentStorage.loadAllProductsDetail();
     } else {
       console.error("idStorage is not a string:", idStorage);
     }
-    const storage = await this.storageService.getAllStorages();
-    console.log(storage);
     this.loading = false;
   }
 }
 </script>
-  
+
+
+<style scoped>
+@import '../css/variables.css';
+
+
+.storage-button {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  padding: 0.5em 1em;
+  border: none;
+  display: inline-block;
+  font-size: var(--storage-button-font-size);
+  border-radius: var(--storage-button-radius);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin-left: 3%;
+  margin-bottom: 1em;
+}
+
+.storage-button:active {
+  background-color: #038555;
+  box-shadow: 0 5px #777;
+  transform: translateY(4px);
+}
+.product-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1rem;
+  height: 100%;
+  padding-top: 4em;
+}
+</style>

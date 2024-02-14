@@ -52,8 +52,6 @@ export default class ResearchView extends Vue {
 
     handleBarcodeScanned(barcodeText: string) {
         console.log('Scanned Barcode:', barcodeText);
-
-        // Redirection to product details page
         this.router.push(`/products/${barcodeText}`);
     }
 }

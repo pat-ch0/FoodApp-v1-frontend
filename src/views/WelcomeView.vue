@@ -27,7 +27,7 @@ import Button from '@/components/Button.vue';
         Button
     },
 })
-export default class ProductDetail extends Vue {
+export default class WelcomeView extends Vue {
     mounted() {
         document.querySelector('nav')?.remove();
     }

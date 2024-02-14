@@ -1,5 +1,5 @@
 import { ApiService } from './api.service';
-import Storage from '@/storage/storage';
+import Storage from '@/storage/storage-type';
 import ApiStorageError from '@/storage/errors/api-storage-error';
 
 export default class StorageService extends ApiService<StorageService> {
@@ -17,7 +17,7 @@ export default class StorageService extends ApiService<StorageService> {
             throw new ApiStorageError("[GET /getAllStorages] Error while fetching storages");
         }
         return storages.map((storage: any) => {
-            const newStorage = new Storage(storage.id, storage.label);
+            const newStorage = new Storage(storage.label, storage.type, storage.img, storage.id);
             newStorage.setProductsFromJson(storage.products);
             return newStorage;
         });
@@ -29,34 +29,26 @@ export default class StorageService extends ApiService<StorageService> {
         if (((response as any).name == "AxiosError")) {
             throw new ApiStorageError(`[GET /getStorageById/${id}] Error while fetching storage`);
         }
-        const storageElem = new Storage(storage.id, storage.label);
+        const storageElem = new Storage(storage.label, storage.type, storage.img, storage.id);
         storageElem.setProductsFromJson(storage.products);
         return storageElem; 
     }
 
-    async createStorage(storageData: { label: string; type: string; prodNb: number; img: string }): Promise<Storage> {
+    async createStorage(label: string, type: string, img: string): Promise<Storage> {
         try {
-            const response = await this.post('', storageData);
+            const response = await this.post('', {
+                label: label,
+                type: type,
+                img: img
+            });
             const storage = response.data as any;
-            console.log('Created Storage:', storage);
-            return new Storage(storage.id, storage.type, storage.label, storage.img);
+            return new Storage(storage.type, storage.label, storage.img, storage.id);
         } catch (error) {
             console.error('Error creating storage:', error);
             throw new ApiStorageError(`[POST /createStorage] Error while creating storage`);
         }
     }
     
-    // async createStorage(label: string): Promise<Storage> {
-    //     const response = await this.put(``, {label : label });
-    //     console.log((response as any).name);
-    //     if ((response as any).name == "AxiosError") {
-    //         throw new ApiStorageError(`[PUT /createStorage] Error while creating storage`);
-    //     }
-    //     const storage = response.data as any;
-    //     const storageElem = new Storage(storage.id, storage.label);
-    //     storageElem.setProductsFromJson(storage.products);
-    //     return storageElem;
-    // }
     
     async deleteStorageById(id: string): Promise<boolean> {
         const response = await this.delete(`${id}`);

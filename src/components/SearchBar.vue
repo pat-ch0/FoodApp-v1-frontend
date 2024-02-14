@@ -26,8 +26,6 @@ export default class SearchBar extends Vue {
     .searchfield {
         width: 80%;
         height: 45px;
-        margin-left: 10%;
-        margin-right: 10%;
         padding: 0 1.2em;
         border-radius: 27px;
         border: 1px solid var(--Border, #D9D0E3);
